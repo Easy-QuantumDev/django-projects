@@ -1,0 +1,98 @@
+{% extends "base.html" %} {% block title %} {{ task.title }} {% endblock %}| TaskFlow {%
+endblock %} {% block content %}
+
+<div class="detail-card">
+  <!-- ================= HEADER ================= -->
+
+  <div class="detail-header">
+    <div>
+      <h1 class="detail-title">{{ task.title }}</h1>
+    </div>
+
+    {% if task.is_completed %}
+
+    <span class="status status-completed"> Completed </span>
+
+    {% else %}
+
+    <span class="status status-pending"> Pending </span>
+
+    {% endif %}
+  </div>
+
+  <!-- ================= DESCRIPTION ================= -->
+
+  <div class="detail-description">
+    {% if task.description %} {{ task.description }} {% else %} This task has no
+    description. {% endif %}
+  </div>
+
+  <!-- ================= META ================= -->
+
+  <div class="detail-meta">
+    <div class="meta-box">
+      <span class="meta-label"> Task ID </span>
+
+      <span class="meta-value"> #{{ task.id }} </span>
+    </div>
+
+    <div class="meta-box">
+      <span class="meta-label"> Created </span>
+
+      <span class="meta-value"> {{ task.created_at|date:"M d, Y H:i" }} </span>
+    </div>
+  </div>
+
+  <!-- ================= ACTIONS ================= -->
+
+  <div class="task-actions" style="margin-top: 25px">
+    <a href="{% url 'tasks:home' %}" class="view"> Back to Tasks </a>
+
+       <form
+      method="post"
+      action='{% url "tasks:toggle_task" task.pk %}'
+      style='display="inline'
+    >
+      {% csrf_token %}
+
+      <button
+        class="btn btn-secondary"
+        type="submit"
+        
+        >
+    {% if task.is_completed %}
+    mark as pending
+    {% else %} 
+    mark as completed
+
+     {% endif %}
+
+            </button>
+
+        </form>
+       <form
+      method="post"
+      action='{% url "tasks:delete_task" task.pk %}'
+      style='display="inline'
+    >
+      {% csrf_token %}
+
+      <button
+        class="btn btn-danger"
+        type="submit"
+      onclick='return confirm("Are you sure to delete the task! ")'  
+        >
+Delete
+            </button>
+
+        </form>
+
+
+    </div>
+
+</div>
+
+
+
+
+{% endblock %}

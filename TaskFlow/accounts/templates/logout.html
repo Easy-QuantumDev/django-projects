@@ -1,0 +1,27 @@
+
+{% extends "tasks/base.html" %}
+
+{% block title %}Signed Out | TaskFlow{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-card logout-card">
+        <div class="logout-icon">✓</div>
+
+        <h1>You've signed out</h1>
+        <p class="auth-subtitle">
+            Your session has ended successfully.
+            See you again soon!
+        </p>
+
+        <a href="{% url 'accounts:login' %}" class="auth-button auth-link-button">
+            Sign In Again <span>→</span>
+        </a>
+
+        <p class="auth-footer">
+            Want to create a new account?
+            <a href="{% url 'accounts:signup' %}">Sign up</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

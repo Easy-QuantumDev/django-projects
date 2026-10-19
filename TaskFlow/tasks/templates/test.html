@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <title>test page</title>
+  </head>
+
+  <body>
+    {% for task in tasks %}
+    <h1>title : {{task.title}}</h1>
+
+    {% if task.description %}
+
+    <p>description : {{task.description}}</p>
+
+    {% else %} 
+
+    <p>no description</p>
+
+    {% endif %}
+    
+    
+    {% if task.is_completed %}
+        <p>task completed</p>
+        {% else %}
+        <p>pending....</p>
+        {% endif %}
+
+        
+
+        
+    
+    {% endfor %}
+  </body>
+</html>

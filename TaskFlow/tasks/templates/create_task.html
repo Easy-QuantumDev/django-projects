@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+    Create Task | TaskFlow
+{% endblock %}
+
+
+{% block content %}
+
+<div class="form-card">
+
+    <div class="page-header">
+
+        <h1>
+            Create Task
+        </h1>
+
+        <p>
+            Add a new task to your workspace.
+        </p>
+
+    </div>
+
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+
+        <!-- TITLE -->
+
+        <div class="form-group">
+
+            <label for="title">
+                Task Title
+            </label>
+
+            <input
+                type="text"
+                id="title"
+                name="title"
+                placeholder="Enter task title"
+                maxlength="200"
+                required
+            >
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="form-group">
+
+            <label for="description">
+                Description
+            </label>
+
+            <textarea
+                id="description"
+                name="description"
+                placeholder="Describe your task..."
+            ></textarea>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="task-actions">
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Create Task
+            </button>
+
+
+            <a
+                href="{% url 'tasks:home' %}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+        </div>
+        
+        {% if error %}
+            {{error}}
+        {% endif %}
+            
+    </form>
+
+</div>
+
+{% endblock %}

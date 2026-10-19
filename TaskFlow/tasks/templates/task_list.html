@@ -1,0 +1,210 @@
+{% extends "base.html" %} {% block title %} My Tasks | TaskFlow {% endblock %}
+{% block content %}
+
+<!-- ================= HEADER ================= -->
+
+<div class="page-header">
+  <div>
+    <h1>My Tasks</h1>
+
+    <p>Manage your tasks and stay productive.</p>
+  </div>
+
+  <a href="{% url 'tasks:create_task' %}" class="btn btn-primary">
+    + Create Task
+  </a>
+</div>
+
+<!-- ================= STATS ================= -->
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-label">Total Tasks</div>
+
+    <div class="stat-value">{{ total_tasks }}</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-label">Completed</div>
+
+    <div class="stat-value">{{completed_tasks}}</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-label">Pending</div>
+
+    <div class="stat-value">{{ pending_tasks }}</div>
+  </div>
+</div>
+
+<!-- ================= TOOLBAR ================= -->
+
+<div class="toolbar">
+  <form method="GET" class="search-box">
+    <input
+      type="text"
+      name="search"
+      value="{{ search }}"
+      placeholder="Search tasks..."
+    />
+
+    <button type="submit" class="btn btn-primary">Search</button>
+    <select name="status">
+      <option value="all" {% if status == "all" %}selected{% endif %}>
+        All Task
+      </option>
+      <option
+        value="completed"
+        {%
+        if
+        status == "completed"
+        %}selected{%
+        endif
+        %}
+      >
+        Completed
+      </option>
+      <option value="pending" {% if status == "pending" %}selected{% endif %}>
+        Pending
+      </option>
+    </select>
+  </form>
+</div>
+
+<!-- ================= TASK LIST ================= -->
+
+<div class="task-list" id="taskList">
+  {% for task in page_object %}
+
+  <div class="task-item" data-task-title="{{ task.title|lower }}">
+    <div class="task-info">
+      <div class="task-title">{{ task.title }}</div>
+
+      {% if task.description %}
+
+      <div class="task-description">{{ task.description }}</div>
+
+      {% else %}
+
+      <div class="task-description">No description</div>
+
+      {% endif %}
+    </div>
+
+    <!-- STATUS -->
+
+    {% if task.is_completed %}
+
+    <span class="status status-completed"> Completed </span>
+
+    {% else %}
+
+    <span class="status status-pending"> Pending </span>
+
+    {% endif %}
+
+    <!-- ACTIONS -->
+
+    <div class="task-actions">
+      <a href="{% url 'tasks:task_detail' task.pk %}" class="view"> View </a>
+
+      <form
+        method="post"
+        action="{% url 'tasks:edit_task' task.pk %}"
+        class="task-edit-form"
+        id="edit-form-{{ task.pk }}"
+      >
+        {% csrf_token %}
+
+        <input
+          type="text"
+          name="title"
+          value="{{ task.title }}"
+          required
+          placeholder="Task title"
+        />
+
+        <textarea name="description" rows="4" placeholder="Task description">
+{{ task.description }}</textarea
+        >
+
+        <div class="edit-form-actions">
+          <button type="submit" class="btn-save-edit">Save Changes</button>
+
+          <button
+            type="button"
+            class="btn-cancel-edit"
+            data-task-id="{{task.pk}}"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+
+      <button
+        type="button"
+        class="btn btn-secondary edit-task"
+        data-task-id="{{ task.pk }}"
+      >
+        Edit
+      </button>
+
+      <form method="post" action="{% url 'tasks:delete_task' task.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+      </form>
+    </div>
+  </div>
+
+  {% empty %}
+
+  <div class="empty-state">
+    <div class="empty-icon">✓</div>
+
+    <h3>No tasks yet</h3>
+
+    <p>Create your first task and start getting things done.</p>
+
+    <a href="{% url 'tasks:create_task' %}" class="btn btn-primary">
+      Create First Task
+    </a>
+  </div>
+
+  {% endfor %} 
+
+<div class="pagination">
+
+    {% if page_object.has_previous %}
+        <a class="pagination-btn"
+           href="?page={{ page_object.previous_page_number }}&search={{ search|urlencode }}&status={{ status|urlencode }}">
+            Previous
+        </a>
+    {% endif %}
+
+    {% for number in page_object.paginator.page_range %}
+
+        {% if number == page_object.number %}
+            <span class="pagination-btn active">
+                {{ number }}
+            </span>
+        {% else %}
+            <a class="pagination-btn"
+               href="?page={{ number }}&search={{ search|urlencode }}&status={{ status|urlencode }}">
+                {{ number }}
+            </a>
+        {% endif %}
+
+    {% endfor %}
+
+    {% if page_object.has_next %}
+        <a class="pagination-btn"
+           href="?page={{ page_object.next_page_number }}&search={{ search|urlencode }}&status={{ status|urlencode }}">
+            Next
+        </a>
+    {% endif %}
+
+</div>
+
+</div>
+
+{% endblock %}
