@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Create Transaction</title>
+  </head>
+  <body>
+    <h1>Create Transaction</h1>
+
+    <!-- Form goes here -->
+    <form method="post">
+      {% csrf_token %}
+      <input name="title" type="text" class="inp_form" />
+
+      <label for="description">Description</label>
+
+      <textarea
+        id="description"
+        name="description"
+        rows="4"
+        cols="50"
+      ></textarea>
+
+      <input name="amount" type="number" step="0.01" required />
+      <select name="category">
+        {% for category in categories %}
+        <option value="{{category.id}}">{{category}}</option>
+        {% endfor %}
+      </select>
+
+      <input name="submit-btn" type="submit" class="inp_form" />
+    </form>
+  </body>
+</html>

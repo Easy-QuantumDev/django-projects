@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Tracker</title>
+</head>
+<body>
+    <h1>My Transactions</h1>
+
+    {% for transaction in transactions %}
+        <div>
+            <h3>{{ transaction.title }}</h3>
+            <p>Amount: {{ transaction.amount }}</p>
+            <p>Category: {{ transaction.category.name }}</p>
+            <p>Date: {{ transaction.created_at }}</p>
+        </div>
+        <hr>
+    {% empty %}
+        <p>No transactions found.</p>
+    {% endfor %}
+</body>
+</html>
