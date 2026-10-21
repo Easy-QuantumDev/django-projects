@@ -9,8 +9,17 @@
 
     <!-- Form goes here -->
     <form method="post">
+      
+      {% if messages %}
+        
+        {% for message in messages %}
+            <p>{{message}}</p>  
+        {% endfor %}
+          
+      {% endif %}
+        
       {% csrf_token %}
-      <input name="title" type="text" class="inp_form" />
+      <input name="title" type="text" class="inp_form"  />
 
       <label for="description">Description</label>
 
@@ -21,10 +30,10 @@
         cols="50"
       ></textarea>
 
-      <input name="amount" type="number" step="0.01" required />
+      <input name="amount" type="number" step="0.01"  />
       <select name="category">
         {% for category in categories %}
-        <option value="{{category.id}}">{{category}}</option>
+        <option value="{{category.id}}">{{category.name}}</option>
         {% endfor %}
       </select>
 
