@@ -1,0 +1,88 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}ExpenseFlow{% endblock %}</title>
+
+   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <div class="app-layout">
+
+        <aside class="sidebar">
+            <a href="{% url 'expenses:transaction-list' %}" class="brand">
+                <span class="brand-icon">E</span>
+                <span>ExpenseFlow</span>
+            </a>
+
+            <p class="nav-label">WORKSPACE</p>
+
+            <nav class="sidebar-nav">
+                <a href="{% url 'expenses:transaction-list' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'transaction-list' %}active{% endif %}">
+                    <span class="nav-icon">▦</span>
+                    Transactions
+                </a>
+
+                <a href="{% url 'expenses:create-list' %}"
+                   class="nav-link {% if request.resolver_match.url_name == 'create-list' %}active{% endif %}">
+                    <span class="nav-icon">＋</span>
+                    Add Transaction
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <span class="status-dot"></span>
+                Personal Finance
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <header class="topbar">
+                <div class="topbar-info">
+                    <strong>Personal Finance</strong>
+                    <p class="topbar-subtitle">
+                        Manage your money with clarity.
+                    </p>
+                </div>
+
+                <a class="topbar-action"
+                   href="{% url 'expenses:create-list' %}">
+                    <span>＋</span>
+                    New Transaction
+                </a>
+            </header>
+
+            <section class="page-content">
+
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="message {{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% block content %}
+                {% endblock %}
+
+            </section>
+
+            <footer class="page-footer">
+                <p>ExpenseFlow · Personal Finance Dashboard</p>
+            </footer>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

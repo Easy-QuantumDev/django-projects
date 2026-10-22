@@ -1,22 +1,174 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Expense Tracker</title>
-</head>
-<body>
-    <h1>My Transactions</h1>
 
-    {% for transaction in transactions %}
-        <div>
-            <h3>{{ transaction.title }}</h3>
-            <p>Amount: {{ transaction.amount }}</p>
-            <p>Category: {{ transaction.category.name }}</p>
-            <p>Date: {{ transaction.created_at }}</p>
+{% extends 'base.html' %}
+
+{% block title %}Transactions | ExpenseFlow{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <p class="eyebrow">OVERVIEW</p>
+        <h1>Transactions</h1>
+        <p class="heading-description">
+            Track your income and expenses in one place.
+        </p>
+    </div>
+
+    <a href="{% url 'expenses:create-list' %}"
+       class="btn btn-primary">
+        + Add Transaction
+    </a>
+</div>
+
+<!-- Summary Cards -->
+<div class="summary-grid">
+
+    <article class="summary-card">
+        <div class="summary-top">
+            <span class="summary-label">Total Income</span>
+            <span class="summary-icon income-icon">↗</span>
         </div>
-        <hr>
-    {% empty %}
-        <p>No transactions found.</p>
-    {% endfor %}
-</body>
-</html>
+
+        <h2 class="summary-amount">
+            {{ total_income|floatformat:2 }}
+        </h2>
+
+        <p class="summary-note">Total recorded income</p>
+    </article>
+
+    <article class="summary-card">
+        <div class="summary-top">
+            <span class="summary-label">Total Expenses</span>
+            <span class="summary-icon expense-icon">↘</span>
+        </div>
+
+        <h2 class="summary-amount">
+            {{ total_expenses|floatformat:2 }}
+        </h2>
+
+        <p class="summary-note">Total recorded expenses</p>
+    </article>
+
+    <article class="summary-card">
+        <div class="summary-top">
+            <span class="summary-label">Net Balance</span>
+            <span class="summary-icon balance-icon">＝</span>
+        </div>
+
+        <h2 class="summary-amount">
+            {{ balance|floatformat:2 }}
+        </h2>
+
+        <p class="summary-note">Income minus expenses</p>
+    </article>
+
+</div>
+
+<!-- Transactions Table -->
+<div class="card transactions-card">
+
+    <div class="card-header">
+        <div>
+            <h2 class="card-title">Recent Transactions</h2>
+            <p class="card-description">
+                Your recorded financial activity
+            </p>
+        </div>
+
+        <span class="record-count">
+            {{ transactions|length }} records
+        </span>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="transaction-table">
+            <thead>
+                <tr>
+                    <th>Transaction</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for transaction in transactions %}
+                    <tr>
+                        <td>
+                            <div class="transaction-title">
+                                {{ transaction.title }}
+                            </div>
+
+                            {% if transaction.description %}
+                                <div class="transaction-description">
+                                    {{ transaction.description|truncatechars:45 }}
+                                </div>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span class="category-badge">
+                                {{ transaction.category.name }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="amount">
+                                {{ transaction.amount|floatformat:2 }}
+                            </span>
+                        </td>
+
+                        <td class="date-cell">
+                            {{ transaction.created_at|date:"M d, Y" }}
+                        </td>
+
+                        <td>
+                            <div class="transaction-actions">
+                                <a class="action-link"
+                                   href="{% url 'expenses:edit-transaction' transaction.pk %}">
+                                    Edit
+                                </a>
+
+                                <form method="post"
+                                      action="{% url 'expenses:delete-transaction' transaction.pk %}"
+                                      onsubmit="return confirm('Are you sure you want to delete this transaction?');">
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="action-button">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+
+                {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">＋</div>
+
+                                <h3>No transactions yet</h3>
+
+                                <p>
+                                    Start tracking your finances by adding
+                                    your first transaction.
+                                </p>
+
+                                <a href="{% url 'expenses:create-list' %}"
+                                   class="btn btn-primary">
+                                    Add First Transaction
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

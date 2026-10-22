@@ -1,9 +1,31 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from .models import Transaction,Category
 from django.contrib import messages
+from django.db.models import Sum
+from decimal import Decimal
+
 def transaction_list(req):
     transactions = Transaction.objects.select_related('category').all()
-    return render(req,'transactions.html',{'transactions':transactions})
+
+    income = Transaction.objects.filter(
+        category__category_type='income'
+    ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+
+    expenses = Transaction.objects.filter(
+        category__category_type='expense'
+    ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+
+    balance = income - expenses
+
+    context = {
+        'transactions': transactions,
+        'total_income': income,
+        'total_expenses': expenses,
+        'balance': balance,
+    }
+
+    return render(req, 'transactions.html', context)
+
 def create_transaction(req):
     categories = Category.objects.all()
     if req.method =='POST':
@@ -50,10 +72,15 @@ def edit_transaction(req,pk):
         transaction.category = category_obj
         transaction.save()
         
-        return render(req,'edit_transaction.html',{"message":'transaction edit successfully '})
-        
+        return redirect("expenses:transaction-list")        
     return render(req,'edit_transaction.html',{"transaction":transaction,'categories':categories})
 
+def delete_transaction(req,pk):
+    transaction = get_object_or_404(Transaction,pk=pk)
+    if req.method == 'POST':
+        transaction.delete()
+        return redirect("expenses:transaction-list")    
+    return redirect("expenses:transaction-list")
 
 
     
