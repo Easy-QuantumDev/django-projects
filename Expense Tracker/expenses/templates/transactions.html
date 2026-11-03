@@ -55,6 +55,7 @@
             <span class="summary-icon balance-icon">＝</span>
         </div>
 
+
         <h2 class="summary-amount">
             {{ balance|floatformat:2 }}
         </h2>
@@ -62,7 +63,120 @@
         <p class="summary-note">Income minus expenses</p>
     </article>
 
+<article class="summary-card">
+    <div class="summary-top">
+        <span class="summary-label">Total Transactions</span>
+        <span class="summary-icon balance-icon">▦</span>
+    </div>
+
+    <h2 class="summary-amount">
+        {{ total_transactions }}
+    </h2>
+
+    <p class="summary-note">All recorded transactions</p>
+</article>
+    
 </div>
+
+
+<section class="card chart-card">
+    <div class="card-header">
+        <div>
+            <h3 class="card-title">Financial Overview</h3>
+            <p class="card-description">
+                Income and expenses during the last 6 months
+            </p>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="financeChart"></canvas>
+    </div>
+</section>
+
+{{ chart_labels|json_script:"chart-labels" }}
+{{ chart_income|json_script:"chart-income" }}
+{{ chart_expenses|json_script:"chart-expenses" }}
+
+<div class="filter-card">
+
+    <div class="filter-header">
+        <div>
+            <h3>Find Transactions</h3>
+            <p>Search and filter your financial activity.</p>
+        </div>
+
+        <span class="filter-icon">⌕</span>
+    </div>
+
+    <form method="GET" class="filter-form">
+
+        <div class="filter-search">
+            <label for="search">Search</label>
+
+            <div class="search-input-wrapper">
+                <span>⌕</span>
+                <input
+                    type="text"
+                    id="search"
+                    name="q"
+                    placeholder="Search by transaction title..."
+                    value="{{ search_query }}"
+                >
+            </div>
+        </div>
+
+        <div class="filter-select">
+            <label for="category">Category</label>
+
+            <select name="category" id="category">
+                <option value="">All Categories</option>
+
+                {% for category in categories %}
+                    <option
+                        value="{{ category.id }}"
+                        {% if category_id == category.id|stringformat:"s" %}selected{% endif %}
+                    >
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-select">
+            <label for="type">Transaction Type</label>
+
+            <select name="type" id="type">
+                <option value="">All Types</option>
+
+                <option value="income"
+                    {% if transaction_type == 'income' %}selected{% endif %}>
+                    Income
+                </option>
+
+                <option value="expense"
+                    {% if transaction_type == 'expense' %}selected{% endif %}>
+                    Expense
+                </option>
+            </select>
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="filter-submit">
+                <span>⌕</span>
+                Apply Filters
+            </button>
+
+            <a href="{% url 'expenses:transaction-list' %}" class="filter-reset">
+                Reset
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+
 
 <!-- Transactions Table -->
 <div class="card transactions-card">
@@ -170,5 +284,63 @@
     </div>
 
 </div>
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script>
+    const labels = JSON.parse(
+        document.getElementById('chart-labels').textContent
+    );
+
+    const incomeData = JSON.parse(
+        document.getElementById('chart-income').textContent
+    );
+
+    const expensesData = JSON.parse(
+        document.getElementById('chart-expenses').textContent
+    );
+
+    const ctx = document.getElementById('financeChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+
+        data: {
+            labels: labels,
+
+            datasets: [
+                {
+                    label: 'Income',
+                    data: incomeData,
+                    backgroundColor: '#16a34a',
+                    borderRadius: 6,
+                },
+                {
+                    label: 'Expenses',
+                    data: expensesData,
+                    backgroundColor: '#ef4444',
+                    borderRadius: 6,
+                }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
 {% endblock %}
