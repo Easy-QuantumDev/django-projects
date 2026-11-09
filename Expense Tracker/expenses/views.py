@@ -6,7 +6,8 @@ from .models import Transaction,Category
 from django.contrib import messages
 from django.db.models import Sum
 from decimal import Decimal
-
+from django.contrib.auth.decorators import login_required
+@login_required
 def transaction_list(req):
 
     transactions = Transaction.objects.select_related('category').all()
@@ -107,7 +108,7 @@ def transaction_list(req):
     }
 
     return render(req, 'transactions.html', context)
-
+@login_required
 def create_transaction(req):
     categories = Category.objects.all()
     if req.method =='POST':
@@ -133,7 +134,7 @@ def create_transaction(req):
         return redirect('expenses:transaction-list')        
             
     return render(req,'create_transaction.html',{'categories':categories})        
-
+@login_required
 def edit_transaction(req,pk):
     transaction = get_object_or_404(Transaction,id=pk)
     categories = Category.objects.all()
@@ -157,6 +158,7 @@ def edit_transaction(req,pk):
         return redirect("expenses:transaction-list")        
     return render(req,'edit_transaction.html',{"transaction":transaction,'categories':categories})
 
+@login_required(login_url='accounts:login')
 def delete_transaction(req,pk):
     transaction = get_object_or_404(Transaction,pk=pk)
     if req.method == 'POST':

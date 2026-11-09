@@ -45,6 +45,18 @@
         <main class="main-content">
 
             <header class="topbar">
+                
+                <form action="{% url 'accounts:logout' %}" method="POST">
+                        
+                    {% csrf_token %}
+                    <input type="submit" value="Logout" class="logout-btn">
+
+                </form>
+                <a href="{% url 'accounts:profile' %}" class="profile-link">
+    <span>👤</span>
+    <span>{{ request.user.username }}</span>
+</a>
+                
                 <div class="topbar-info">
                     <strong>Personal Finance</strong>
                     <p class="topbar-subtitle">
